@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import TodoList from './src/main';
 
 
 export default class App extends Component{
   render() {
     return (
-      <TodoList/>
+      <SafeAreaView style={{flex:1,width:"100%"}}>
+        <TodoList/>
+      </SafeAreaView>
     );
   }
 }

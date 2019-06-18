@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform,TextInput,Image, StyleSheet,TouchableOpacity, Text, View, ScrollView} from 'react-native';
+import {TextInput,Image, StyleSheet,TouchableOpacity, Text, View, ScrollView} from 'react-native';
 import Item from './item';
 
 export default class TodoList extends Component{
@@ -14,9 +14,13 @@ export default class TodoList extends Component{
         if(this.state.val!=''){
             if(this.state.edit.toString()=='') {
                 this.setState({
-                    val:'',
                     list: [...tempList,{name:this.state.val, status:false}]
-                })
+                },()=>{
+                    this.setState({
+                        val: ''
+                    })  
+                }
+                )
             } else {
             //TO EDIT
                 tempList= this.state.list
@@ -52,19 +56,38 @@ export default class TodoList extends Component{
     render() {
         return (
         <View style={styles.container}>
-            <View style={{width:'100%', borderColor:'rgb(100,100,100)',borderBottomWidth:2, alignItems:'center', padding:20}}>
-                <Text style={{fontSize:20,color:'black', fontFamily:"Montserrat-Bold"}}>My To-Do List</Text>
+            <View style={styles.header}>
+                <Text style={styles.title}>My To-Do List</Text>
             </View>
-            <View style={{flexDirection:'row',borderColor:'rgb(100,100,100)',borderBottomWidth:2,alignItems:'flex-end'}}>
-                <TextInput onSubmitEditing={this.addItem} ref={x=>this.input=x} clearButtonMode="while-editing" style={{borderColor:'rgb(100,100,100)', fontSize:20,fontFamily:'Montserrat-Medium',borderBottomWidth:2, flex:1,marginHorizontal:10,marginBottom:10,paddingVertical:5, paddingHorizontal:10}} value={this.state.val} onChangeText={(val)=>this.setState({val})}/>
-                <TouchableOpacity onPress={this.addItem} style={{padding:20}}>
-                    <Image source={require('../assets/add.png')} style={{width:30,height:30}}/>
+            <View style={styles.inputContainer}>
+                <TextInput 
+                    autoCorrect={false} 
+                    onSubmitEditing={this.addItem} 
+                    ref={x=>this.input=x} 
+                    clearButtonMode="while-editing" 
+                    style={styles.inputStyle} 
+                    value={this.state.val} 
+                    onChangeText={(val)=>this.setState({val})}/>
+                <TouchableOpacity 
+                    onPress={this.addItem} 
+                    style={styles.addButtonStyle}>
+                    <Image 
+                        source={require('../assets/add.png')} 
+                        style={styles.addImageStyle}/>
                 </TouchableOpacity>
             </View>
-            <ScrollView keyboardDismissMode={true} keyboardShouldPersistTaps="always" style={{ flex:1, width:'100%'}}>
+            <ScrollView 
+                keyboardDismissMode={true} 
+                keyboardShouldPersistTaps="always" 
+                style={styles.scrollContainer}>
                 {
                     this.state.list.map((item,i)=>{
-                        return <Item editItem={()=>this.editItem(i)} deleteItem={()=>this.deleteItem(i)} key={i} toggleStatusItem={()=>this.toggleStatusItem(i)} name={item.name} status={item.status}/>
+                        return <Item key={i} 
+                                    editItem={()=>this.editItem(i)} 
+                                    deleteItem={()=>this.deleteItem(i)} 
+                                    toggleStatusItem={()=>this.toggleStatusItem(i)} 
+                                    name={item.name} 
+                                    status={item.status}/>
                     })
                 }
             </ScrollView>
@@ -79,17 +102,47 @@ const styles = StyleSheet.create({
     width:'100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-    paddingTop: 20,
+    backgroundColor: '#F5FCFF'
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  header: {
+    width:'100%', 
+    borderColor:'rgb(100,100,100)',
+    borderBottomWidth:2, 
+    alignItems:'center', 
+    padding:20
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  title: {
+    fontSize:20,
+    color:'black',
+    fontFamily:"Montserrat-Bold"
   },
+  inputContainer: {
+    flexDirection:'row',
+    borderColor:'rgb(100,100,100)',
+    borderBottomWidth:2,
+    alignItems:'flex-end'
+  },
+  inputStyle:{
+    borderColor:'rgb(100,100,100)', 
+    fontSize:20,
+    fontFamily:'Montserrat-Medium',
+    borderBottomWidth:2, 
+    flex:1,
+    marginHorizontal:10,
+    marginBottom:10,
+    paddingVertical:5, 
+    paddingHorizontal:10
+  },
+  addButtonStyle:{
+    padding:20
+  },
+  addImageStyle:{
+    width:30,
+    height:30
+  },
+  scrollContainer:{
+    flex:1, 
+    width:'100%'
+  }
+
 });
