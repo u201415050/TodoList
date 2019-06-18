@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import {TextInput,Image, StyleSheet,TouchableOpacity, Text, View, ScrollView} from 'react-native';
 import Item from './item';
-import { getTable, createRow } from '../services/realm_service';
 
 export default class TodoList extends Component{
     state={
-        list: getTable("Item"),
+        list: [],
         val:'',
         edit:''
     }
@@ -14,26 +13,31 @@ export default class TodoList extends Component{
         //TO ADD
         if(this.state.val!=''){
             if(this.state.edit.toString()=='') {
-                createRow("Item", {name:this.state.val, status:false})
                 this.setState({
+                    list: [...tempList,{name:this.state.val, status:false}]	,
                     val: ''
                 })  
             } else {
             //TO EDIT
-                this.state.list[this.state.edit].editName(this.state.val)
-                this.setState({edit:'', val:''})
+                tempList= this.state.list		           
+                tempList[this.state.edit].name=this.state.val		         
+
+                this.setState({list:tempList, edit:'', val:''})
             }
         } 
     }
     toggleStatusItem=(index)=>{
         //TO MARK AS COMPLETED
-        this.state.list[index].toggleStatus()
-        this.forceUpdate()
+        let tempList= this.state.list		     
+        tempList[index].status=!tempList[index].status	
+        this.setState({list:tempList})
     }
     deleteItem=(index)=>{
         //TO DELETE
-        this.state.list[index].deleteItem()
-        this.forceUpdate()
+        let temp= this.state.list.filter((item,i)=>{		      
+            return i!=index		   
+        })		
+        this.setState({list:temp})
         if(this.state.edit.toString()!=''){
             this.setState({edit:'', val:''})
         }
