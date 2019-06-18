@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {TextInput,Image, StyleSheet,TouchableOpacity, Text, View, ScrollView} from 'react-native';
+import {AsyncStorage, TextInput,Image, StyleSheet,TouchableOpacity, Text, View, ScrollView} from 'react-native';
 import Item from './item';
 
 export default class TodoList extends Component{
@@ -13,22 +13,32 @@ export default class TodoList extends Component{
         //TO ADD
         if(this.state.val!=''){
             if(this.state.edit.toString()=='') {
-                this.setState({
-                    list: [...tempList,{name:this.state.val, status:false}]
-                },()=>{
+                let newList = [...tempList,{name:this.state.val, status:false}]
+                this.modifyStorage(newList).then(res=>{
                     this.setState({
-                        val: ''
-                    })  
-                }
-                )
+                        list: [...tempList,{name:this.state.val, status:false}]
+                    },()=>{
+                        this.setState({
+                            val: ''
+                        })  
+                    })
+                })
             } else {
             //TO EDIT
                 tempList= this.state.list
                 tempList[this.state.edit].name=this.state.val
-                
-                this.setState({list:tempList, edit:'', val:''})
+                this.modifyStorage(tempList).then(res=>{
+                    this.setState({list:tempList, edit:'', val:''})
+                })
             }
         } 
+    }
+    modifyStorage= async (list)=>{
+        try {
+            await AsyncStorage.setItem('@TodoList:list', JSON.stringify(list));
+        } catch (error) {
+            alert(error)
+        }
     }
     toggleStatusItem=(index)=>{
         //TO MARK AS COMPLETED
@@ -41,16 +51,27 @@ export default class TodoList extends Component{
         let temp= this.state.list.filter((item,i)=>{
             return i!=index
         })
+        this.modifyStorage(temp).then(res=>{
         this.setState({list:temp})
-        if(this.state.edit.toString()!=''){
-            this.setState({edit:'', val:''})
-        }
+            if(this.state.edit.toString()!=''){
+             this.setState({edit:'', val:''})
+            }
+        })
     }
     editItem=(index)=>{
         //TO START EDIT
         this.setState({edit:index, val:this.state.list[index].name})
     }
-    componentDidMount(){
+    async componentDidMount(){
+        try {
+            const tempList = await AsyncStorage.getItem('@TodoList:list');
+            if (tempList !== null) {
+              // We have data!!
+              this.setState({list:JSON.parse(tempList)})
+            }
+          } catch (error) {
+            alert(error)
+          }
         this.input.focus()
     }
     render() {
