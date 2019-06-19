@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import {TextInput,Image, StyleSheet,TouchableOpacity, Text, View, ScrollView} from 'react-native';
 import Item from './item';
+import Database from '../services/sqlite_service';
 
+const db =  new Database()
 export default class TodoList extends Component{
     state={
         list: [],
@@ -13,19 +15,23 @@ export default class TodoList extends Component{
         //TO ADD
         if(this.state.val!=''){
             if(this.state.edit.toString()=='') {
-                this.setState({
+                
+                db.addProduct({id:tempList.length==0?0:tempList[tempList.length-1].id+1,name:this.state.val,status:false}).then(()=>{
+                   this.setState({
                     list: [...tempList,{name:this.state.val, status:false}]
                 },()=>{
                     this.setState({
                         val: ''
                     })  
                 }
-                )
+                ) 
+                })
+                
             } else {
             //TO EDIT
                 tempList= this.state.list
                 tempList[this.state.edit].name=this.state.val
-                
+                db.updateProduct(this.state.edit,tempList[this.state.edit])
                 this.setState({list:tempList, edit:'', val:''})
             }
         } 
@@ -34,6 +40,7 @@ export default class TodoList extends Component{
         //TO MARK AS COMPLETED
         let tempList= this.state.list
         tempList[index].status=!tempList[index].status
+        db.updateProduct(index,tempList[index])
         this.setState({list:tempList})
     }
     deleteItem=(index)=>{
@@ -41,16 +48,23 @@ export default class TodoList extends Component{
         let temp= this.state.list.filter((item,i)=>{
             return i!=index
         })
-        this.setState({list:temp})
-        if(this.state.edit.toString()!=''){
-            this.setState({edit:'', val:''})
-        }
+        db.deleteProduct(index).then(()=>{
+            this.setState({list:temp})
+            if(this.state.edit.toString()!=''){
+                this.setState({edit:'', val:''})
+            }
+        })
+        
     }
     editItem=(index)=>{
         //TO START EDIT
         this.setState({edit:index, val:this.state.list[index].name})
     }
     componentDidMount(){
+        db.listProduct().then(res=>{
+            //alert(JSON.stringify(res))
+            this.setState({list:res})
+        }).catch(error=>alert(error))
         this.input.focus()
     }
     render() {
