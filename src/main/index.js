@@ -26,30 +26,22 @@ export default class TodoList extends Component {
         if (this.state.val != '') {
             if (this.state.edit.toString() == '') {
 
-                db.addProduct({
-                    id: tempList.length == 0 ? 0 : tempList[tempList.length - 1].id + 1,
+                db.addProduct({    id: tempList.length == 0 ? 0 : tempList[tempList.length - 1].id + 1,
                     name: this.state.val,
                     status: false
-                }).then(() => {
-                    this.setState({
-                        list: [...tempList, {
-                            name: this.state.val,
+                }).then(() => {    this.setState({        list: [...tempList, {            name: this.state.val,
                             status: false
                         }]
-                    }, () => {
-                        this.setState({
-                            val: ''
+                    }, () => {        this.setState({            val: ''
                         })
                     })
                 })
 
-            } else {
-                //TO EDIT
+            } else {//TO EDIT
                 tempList = this.state.list
                 tempList[this.state.edit].name = this.state.val
                 db.updateProduct(this.state.edit, tempList[this.state.edit])
-                this.setState({
-                    list: tempList,
+                this.setState({    list: tempList,
                     edit: '',
                     val: ''
                 })
@@ -71,12 +63,9 @@ export default class TodoList extends Component {
             return i != index
         })
         db.deleteProduct(index).then(() => {
-            this.setState({
-                list: temp
+            this.setState({list: temp
             })
-            if (this.state.edit.toString() != '') {
-                this.setState({
-                    edit: '',
+            if (this.state.edit.toString() != '') {this.setState({    edit: '',
                     val: ''
                 })
             }
@@ -93,99 +82,48 @@ export default class TodoList extends Component {
     componentDidMount() {
         db.listProduct().then(res => {
             //alert(JSON.stringify(res))
-            this.setState({
-                list: res
+            this.setState({list: res
             })
         }).catch(error => alert(error))
         this.input.focus()
     }
     render() {
-        return ( <
-            View style = {
-                styles.container
-            } >
-            <
-            View style = {
-                styles.header
-            } >
-            <
-            Text style = {
-                styles.title
-            } > My To - Do List < /Text> <
-            /View> <
-            View style = {
-                styles.inputContainer
-            } >
-            <
-            TextInput autoCorrect = {
-                false
+        return ( 
+        <View style = {styles.container}>
+            <View style = {styles.header}>
+                <Text style = {styles.title}> My To - Do List </Text> 
+            </View> 
+            <View style = {styles.inputContainer}>
+            <TextInput autoCorrect = {false}
+                onSubmitEditing = {this.addItem}
+                ref = {x => this.input = x}
+                clearButtonMode = "while-editing"
+                style = {styles.inputStyle}
+                value = {this.state.val}
+                onChangeText = {(val) => this.setState({val})}/> 
+            <TouchableOpacity 
+                onPress = {this.addItem}
+                style = {styles.addButtonStyle}>
+                <Image source = {require('../assets/add.png')} style = {styles.addImageStyle
             }
-            onSubmitEditing = {
-                this.addItem
-            }
-            ref = {
-                x => this.input = x
-            }
-            clearButtonMode = "while-editing"
-            style = {
-                styles.inputStyle
-            }
-            value = {
-                this.state.val
-            }
-            onChangeText = {
-                (val) => this.setState({
-                    val
-                })
-            }
-            /> <
-            TouchableOpacity onPress = {
-                this.addItem
-            }
-            style = {
-                styles.addButtonStyle
-            } >
-            <
-            Image source = {
-                require('../assets/add.png')
-            }
-            style = {
-                styles.addImageStyle
-            }
-            /> <
-            /TouchableOpacity> <
-            /View> <
-            ScrollView keyboardDismissMode = {
-                true
+            /> </TouchableOpacity> </View> <ScrollView keyboardDismissMode = {true
             }
             keyboardShouldPersistTaps = "always"
-            style = {
-                styles.scrollContainer
-            } > {
-                this.state.list.map((item, i) => {
-                    return <Item key = {
-                        i
+            style = {styles.scrollContainer}> {this.state.list.map((item, i) => {    return <Item key = {        i
                     }
-                    editItem = {
-                        () => this.editItem(i)
+                    editItem = {        () => this.editItem(i)
                     }
-                    deleteItem = {
-                        () => this.deleteItem(i)
+                    deleteItem = {        () => this.deleteItem(i)
                     }
-                    toggleStatusItem = {
-                        () => this.toggleStatusItem(i)
+                    toggleStatusItem = {        () => this.toggleStatusItem(i)
                     }
-                    name = {
-                        item.name
+                    name = {        item.name
                     }
-                    status = {
-                        item.status
+                    status = {        item.status
                     }
                     />
                 })
-            } <
-            /ScrollView> <
-            /View>
+            } </ScrollView> </View>
         );
     }
 }
