@@ -89,41 +89,43 @@ export default class TodoList extends Component {
     }
     render() {
         return ( 
-        <View style = {styles.container}>
-            <View style = {styles.header}>
-                <Text style = {styles.title}> My To - Do List </Text> 
-            </View> 
-            <View style = {styles.inputContainer}>
-            <TextInput autoCorrect = {false}
-                onSubmitEditing = {this.addItem}
-                ref = {x => this.input = x}
-                clearButtonMode = "while-editing"
-                style = {styles.inputStyle}
-                value = {this.state.val}
-                onChangeText = {(val) => this.setState({val})}/> 
-            <TouchableOpacity 
-                onPress = {this.addItem}
-                style = {styles.addButtonStyle}>
-                <Image source = {require('../assets/add.png')} style = {styles.addImageStyle
-            }
-            /> </TouchableOpacity> </View> <ScrollView keyboardDismissMode = {true
-            }
-            keyboardShouldPersistTaps = "always"
-            style = {styles.scrollContainer}> {this.state.list.map((item, i) => {    return <Item key = {        i
-                    }
-                    editItem = {        () => this.editItem(i)
-                    }
-                    deleteItem = {        () => this.deleteItem(i)
-                    }
-                    toggleStatusItem = {        () => this.toggleStatusItem(i)
-                    }
-                    name = {        item.name
-                    }
-                    status = {        item.status
-                    }
-                    />
-                })
-            } </ScrollView> </View>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.title}>My To-Do List</Text>
+            </View>
+            <View style={styles.inputContainer}>
+                <TextInput 
+                    autoCorrect={false} 
+                    onSubmitEditing={this.addItem} 
+                    ref={x=>this.input=x} 
+                    clearButtonMode="while-editing" 
+                    style={styles.inputStyle} 
+                    value={this.state.val} 
+                    onChangeText={(val)=>this.setState({val})}/>
+                <TouchableOpacity 
+                    onPress={this.addItem} 
+                    style={styles.addButtonStyle}>
+                    <Image 
+                        source={require('../assets/add.png')} 
+                        style={styles.addImageStyle}/>
+                </TouchableOpacity>
+            </View>
+            <ScrollView 
+                keyboardDismissMode={true} 
+                keyboardShouldPersistTaps="always" 
+                style={styles.scrollContainer}>
+                {
+                    this.state.list.map((item,i)=>{
+                        return <Item key={i} 
+                                    editItem={()=>this.editItem(i)} 
+                                    deleteItem={()=>this.deleteItem(i)} 
+                                    toggleStatusItem={()=>this.toggleStatusItem(i)} 
+                                    name={item.name} 
+                                    status={item.status}/>
+                    })
+                }
+            </ScrollView>
+        </View>
         );
     }
 }
